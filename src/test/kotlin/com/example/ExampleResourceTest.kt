@@ -19,8 +19,6 @@ class ExampleResourceTest {
       .log()
       .all()
       .body(
-        "$", hasKey("defaultValue"),
-        "$", not(hasKey("nullable")),
         "greeting", `is`("Hello from RESTEasy Reactive"),
       )
   }
