@@ -9,7 +9,6 @@ import org.eclipse.microprofile.reactive.messaging.Emitter
 class ExampleEmitter {
 
   @Channel("example-channel")
-  @Broadcast
   private lateinit var emitter : Emitter<ExampleResponse>
 
   fun emitExample(exampleMessage: ExampleResponse) {
