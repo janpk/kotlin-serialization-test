@@ -1,93 +1,54 @@
 # kotlin-serialization-test
 
+This branch contains the default configuration after running the quarkus starter with dependency
 
-This repo contains branches for various variations of testing out kotlinx.serialization with Quarkus.
-
-Branches : 
-
-| Branch                                         | Description                                                                   |
-|------------------------------------------------|-------------------------------------------------------------------------------|
-| resteasy-reactive-plain                        | No configuration outside of the generated starter setup                       |
-| resteasy-reactive-maven                        | Configuration of the kotlin maven plugin                                      |
-| resteasy-reactive-custom                       | Adding custom kotlinx.serialization                                           |
-| resteasy-reactive-kafka-plain                  | Using kafka with no extra configuration                                       |
-| resteasy-reactive-kafka-objectmapperserializer | Using kafka with io.quarkus.kafka.client.serialization.ObjectMapperSerializer |
-| resteasy-reactive-kafka-jsonobjectserializer   | Using kafka with io.quarkus.kafka.client.serialization.JsonObjectSerializer   |
-| resteasy-reactive-kafka-customserializer       | Using kafka with a custom kotlinx.serialization serializer                    |
-
-
-
-
-
-
-# Below is generated doc by quarkus starter
-
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
-
-## Running the application in dev mode
-
-You can run your application in dev mode that enables live coding using:
-
-```shell script
-./mvnw compile quarkus:dev
+```xml
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-reactive-kotlin-serialization</artifactId>
+    </dependency>
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only
-> at http://localhost:8080/q/dev/.
+Changes from the generated starter app:
 
-## Packaging and running the application
+- Added ExampleResponse class with kotlinx.serialization ```@Serializable``` annotation and returing the data class from the rest endpoint
 
-The application can be packaged using:
+```kotlin
+@Serializable
+data class ExampleResponse(
+```
+kotlinx.serialization does not work out of the box. The quarkus code starter do not configure kotlin serialization with the kotlin compiler.
 
-```shell script
-./mvnw package
+Running 
+
+```bash
+./mvnw clean test
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into
-the `target/quarkus-app/lib/` directory.
+will give
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
 ```
+2023-05-24 08:03:58,605 ERROR [io.qua.ver.htt.run.QuarkusErrorHandler] (executor-thread-1) HTTP Request to /hello failed, error id: 9cabfcf6-99b9-4c9b-a808-ed23a2614954-1: kotlinx.serialization.SerializationException: Serializer for class 'ExampleResponse' is not found.
+Please ensure that class is marked as '@Serializable' and that the serialization compiler plugin is applied.
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+        at kotlinx.serialization.internal.PlatformKt.serializerNotRegistered(Platform.kt:31)
+        at kotlinx.serialization.SerializersKt__SerializersJvmKt.serializer(SerializersJvm.kt:77)
+        at kotlinx.serialization.SerializersKt.serializer(Unknown Source)
+        at kotlinx.serialization.SerializersKt__SerializersJvmKt.serializer(SerializersJvm.kt:36)
+        at kotlinx.serialization.SerializersKt.serializer(Unknown Source)
+        at io.quarkus.resteasy.reactive.kotlin.serialization.runtime.KotlinSerializationMessageBodyWriter.writeResponse(KotlinSerializationMessageBodyWriter.kt:45)
+        at org.jboss.resteasy.reactive.server.core.ServerSerialisers.invokeWriter(ServerSerialisers.java:227)
+        at org.jboss.resteasy.reactive.server.core.ServerSerialisers.invokeWriter(ServerSerialisers.java:195)
+        at org.jboss.resteasy.reactive.server.core.serialization.FixedEntityWriter.write(FixedEntityWriter.java:28)
+        at org.jboss.resteasy.reactive.server.handlers.ResponseWriterHandler.handle(ResponseWriterHandler.java:34)
+        at io.quarkus.resteasy.reactive.server.runtime.QuarkusResteasyReactiveRequestContext.invokeHandler(QuarkusResteasyReactiveRequestContext.java:147)
+        at org.jboss.resteasy.reactive.common.core.AbstractResteasyReactiveContext.run(AbstractResteasyReactiveContext.java:145)
+        at io.quarkus.vertx.core.runtime.VertxCoreRecorder$14.runWith(VertxCoreRecorder.java:576)
+        at org.jboss.threads.EnhancedQueueExecutor$Task.run(EnhancedQueueExecutor.java:2513)
+        at org.jboss.threads.EnhancedQueueExecutor$ThreadBody.run(EnhancedQueueExecutor.java:1538)
+        at org.jboss.threads.DelegatingRunnable.run(DelegatingRunnable.java:29)
+        at org.jboss.threads.ThreadLocalResettingRunnable.run(ThreadLocalResettingRunnable.java:29)
+        at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30)
+        at java.base/java.lang.Thread.run(Thread.java:833)
 
-## Creating a native executable
-
-You can create a native executable using:
-
-```shell script
-./mvnw package -Pnative
 ```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container
-using:
-
-```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable
-with: `./target/kotlin-serialization-test-1.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please
-consult https://quarkus.io/guides/maven-tooling.
-
-## Related Guides
-
-- Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
-
-## Provided Code
-
-### RESTEasy Reactive
-
-Easily start your Reactive RESTful Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
