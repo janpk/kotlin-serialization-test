@@ -1,45 +1,95 @@
-# kotlin-serialization-test
+# Quarkus kotlin-serialization-test
 
-This branch adds kafka to the dependencies with default setup.
 
-```xml
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-reactive-messaging-kafka</artifactId>
-    </dependency>
+This repo contains branches for various variations of testing out kotlinx.serialization with Quarkus.
+
+Branches :
+
+| Branch                                         | Description                                                                   |
+|------------------------------------------------|-------------------------------------------------------------------------------|
+| resteasy-reactive-plain                        | No configuration outside of the generated starter setup                       |
+| resteasy-reactive-maven                        | Configuration of the kotlin maven plugin                                      |
+| resteasy-reactive-custom                       | Adding custom kotlinx.serialization                                           |
+| resteasy-reactive-kafka                        | Using kafka with custom serdes                                                |
+
+The readme in each branch should outline what is done and what is tested.
+
+Main takeaways so far
+
+- The starter when selecting the ```quarkus-resteasy-reactive-kotlin-serialization``` dependency, does not completely configure the kotlin maven plugin to enable kotlin serialization.
+- Adding kotlinx.serialization to the kotlin maven plugin activates kotlin serialization
+- To customize the serialization, if you want to deviate from kotlinx.serialization defaults, you have to add a producer where you set your desired configuration
+- To use kotlin serialization with kafka, you have to create your own custom serializers
+
+
+# Below is generated doc by quarkus starter
+
+This project uses Quarkus, the Supersonic Subatomic Java Framework.
+
+If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+
+## Running the application in dev mode
+
+You can run your application in dev mode that enables live coding using:
+
+```shell script
+./mvnw compile quarkus:dev
 ```
-For testing, the smallrye kafka copanion is used
 
-```xml
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-test-kafka-companion</artifactId>
-      <scope>test</scope>
-    </dependency>
+> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only
+> at http://localhost:8080/q/dev/.
+
+## Packaging and running the application
+
+The application can be packaged using:
+
+```shell script
+./mvnw package
 ```
 
-To serialize objects with kotlinx serialization, custom serdes implementations have to be created. It is simple, it's just implementing the kafka interfaces and call kotlinx serialization classes. 
+It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into
+the `target/quarkus-app/lib/` directory.
 
-```kotlin
-class CustomKotlinSerializer : Serializer<ExampleResponse> {
-  override fun serialize(topic: String, data: ExampleResponse): ByteArray {
-    return Json.encodeToString(data).toByteArray(Charsets.UTF_8)
-  }
-}
-```
-```kotlin
-class CustomKotlinDeserializer : Deserializer<ExampleResponse> {
-  override fun deserialize(topic: String, data: ByteArray): ExampleResponse {
-    return Json.decodeFromString(data.toString(StandardCharsets.UTF_8))
-  }
-}
+The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+
+If you want to build an _über-jar_, execute the following command:
+
+```shell script
+./mvnw package -Dquarkus.package.type=uber-jar
 ```
 
+The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
 
+## Creating a native executable
 
-Running
+You can create a native executable using:
 
-```bash
-./mvnw clean test
+```shell script
+./mvnw package -Pnative
 ```
-is succesful.
+
+Or, if you don't have GraalVM installed, you can run the native executable build in a container
+using:
+
+```shell script
+./mvnw package -Pnative -Dquarkus.native.container-build=true
+```
+
+You can then execute your native executable
+with: `./target/kotlin-serialization-test-1.0-SNAPSHOT-runner`
+
+If you want to learn more about building native executables, please
+consult https://quarkus.io/guides/maven-tooling.
+
+## Related Guides
+
+- Kotlin ([guide](https://quarkus.io/guides/kotlin)): Write your services in Kotlin
+
+## Provided Code
+
+### RESTEasy Reactive
+
+Easily start your Reactive RESTful Web Services
+
+[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
